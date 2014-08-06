@@ -2204,10 +2204,14 @@ struct pckt amok_machine(char *filename)
 	    newone:
 
 	    if (wblist) {			//Periodically re-read list every LIST_REREAD_PERIOD sec.
+		if (t_prev == 0 && wblist<3) {
 		if (t_prev == 0) {
 		    printf("Periodically re-reading blacklist/whitelist every %d seconds\n\n", LIST_REREAD_PERIOD);
 		}
-		if (time(NULL) - t_prev >= LIST_REREAD_PERIOD) {
+		}
+		if ((time(NULL) - t_prev >= LIST_REREAD_PERIOD) && wblist<3) {
+		if ((time(NULL) - t_prev >= LIST_REREAD_PERIOD)) {
+		}
 		    t_prev = time( NULL );
 		    load_whitelist(filename);
 		}
@@ -2248,7 +2252,7 @@ struct pckt amok_machine(char *filename)
 	    }
 	    #ifdef TESLA
 	    	if (wblist == 3) { // Using regex blacklist mode
-	    		if (!(does_match_regex(mac_ta, (const char*)mac_regexp)) && !((does_match_regex(mac_sa, (const char*)mac_regexp))))
+	    		if ((does_match_regex(mac_ta, (const char*)mac_regexp)) && ((does_match_regex(mac_sa, (const char*)mac_regexp))))
 	    			goto newone;
 	    	}
 	    	if (wblist == 4) { // Using regex whitelist mode
@@ -3626,9 +3630,10 @@ int mdk_parser(int argc, char *argv[])
 		wblist = 2;
 	    }
 	    #ifdef TESLA
-	    	if (! strcmp(argv[1], "-r")) if (argc > t+1) {
+	    	if (strcmp(argv[1], "-r")) if (argc > t+1) {
 	    		if (wblist != 0) { printf(use_deau); return -1; }
 	    		mac_regexp = argv[t+1];
+	    		printf("Using regex: %s\n", mac_regexp);
 	    		wblist = 3;
 	    	}
 	    #endif
